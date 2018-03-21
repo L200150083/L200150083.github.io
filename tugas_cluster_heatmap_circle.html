@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>TUGAS - CLUSTER, CIRCLE, HEATMAP</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #floating-panel {
+        position: absolute;
+        top: 10px;
+        left: 25%;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+        text-align: center;
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }
+      #floating-panel {
+        background-color: #fff;
+        border: 1px solid #999;
+        left: 25%;
+        padding: 5px;
+        position: absolute;
+        top: 10px;
+        z-index: 5;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="floating-panel">
+      <button onclick="toggleHeatmap()">Toggle Heatmap</button>
+      <button onclick="changeGradient()">Change gradient</button>
+      <button onclick="changeRadius()">Change radius</button>
+      <button onclick="changeOpacity()">Change opacity</button>
+    </div>
+    <div id="map"></div>
+    <script>
+      // This example requires the Visualization library. Include the libraries=visualization
+      // parameter when you first load the API. For example:
+      // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=visualization">
+      var citymap = {
+        chicago: {
+          center: {lat: -7.1489508, lng: 111.5807452},
+          population: 10000
+        }
+      };
+      var map, heatmap;
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 10,
+          center: {lat: -7.5520961, lng: 110.8085346},
+          mapTypeId: 'satellite'
+        });
+        heatmap = new google.maps.visualization.HeatmapLayer({
+          data: getPoints(),
+          map: map
+        });
+      
+        var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        // Add some markers to the map.
+        // Note: The code uses the JavaScript Array.prototype.map() method to
+        // create an array of markers based on a given "locations" array.
+        // The map() method here has nothing to do with the Google Maps API.
+        var markers = locations.map(function(location, i) {
+          return new google.maps.Marker({
+            position: location,
+            label: labels[i % labels.length]
+          });
+        });
+        for (var city in citymap) {
+          // Add the circle for this city to the map.
+          var cityCircle = new google.maps.Circle({
+            strokeColor: '#000080',
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: '#FF0000',
+            fillOpacity: 0.35,
+            map: map,
+            center: citymap[city].center,
+            radius: Math.sqrt(citymap[city].population) * 100
+          });
+        }
+        // Add a marker clusterer to manage the markers.
+        var markerCluster = new MarkerClusterer(map, markers,
+            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+      }
+      function toggleHeatmap() {
+        heatmap.setMap(heatmap.getMap() ? null : map);
+      }
+      function changeGradient() {
+        var gradient = [
+          'rgba(0, 255, 255, 0)',
+          'rgba(0, 255, 255, 1)',
+          'rgba(0, 191, 255, 1)',
+          'rgba(0, 127, 255, 1)',
+          'rgba(0, 63, 255, 1)',
+          'rgba(0, 0, 255, 1)',
+          'rgba(0, 0, 223, 1)',
+          'rgba(0, 0, 191, 1)',
+          'rgba(0, 0, 159, 1)',
+          'rgba(0, 0, 127, 1)',
+          'rgba(63, 0, 91, 1)',
+          'rgba(127, 0, 63, 1)',
+          'rgba(191, 0, 31, 1)',
+          'rgba(255, 0, 0, 1)'
+        ]
+        heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);
+      }
+      function changeRadius() {
+        heatmap.set('radius', heatmap.get('radius') ? null : 20);
+      }
+      function changeOpacity() {
+        heatmap.set('opacity', heatmap.get('opacity') ? null : 0.2);
+      }
+      // Heatmap data: 500 Points
+      function getPoints() {
+        return [
+          new google.maps.LatLng(-7.2519842,111.4597269),
+          new google.maps.LatLng(-7.2503063,111.4589976),
+          new google.maps.LatLng(-7.2487327,111.4585042),
+          new google.maps.LatLng(-7.2496272,111.459063),
+          new google.maps.LatLng(-7.2490739,111.4585845),
+          new google.maps.LatLng(-7.249675,111.4598221),
+          new google.maps.LatLng(-7.2455509,111.4517694),
+          new google.maps.LatLng(-7.2427795,111.4494498),
+          new google.maps.LatLng(-7.2390498,111.4461467),
+          new google.maps.LatLng(-7.23809,111.4443022),
+          new google.maps.LatLng(-7.2372998,111.4404217),
+   
+          
+          ];
+      }
+      var locations = [
+        {lat: -7.1508832, lng: 111.5849919},
+        {lat: -7.1586465, lng: 111.548363},
+        {lat: -7.1519492, lng: 111.8781068},
+        {lat: -7.1494261, lng: 111.878049},
+        {lat: -7.1554082, lng: 111.8889511},
+        {lat: -7.405149, lng: 111.4167185},
+        {lat: -7.4001736, lng: 111.4143622},
+        {lat: -7.5468706, lng: 110.7649755}
+      ];
+    </script>
+    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAMimCTVEwZJovoX-3sORcV9Gwv1T-QSOM&libraries=visualization&callback=initMap">
+    </script>
+  </body>
+</html>
